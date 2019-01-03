@@ -1,0 +1,47 @@
+<%- include('header'); -%>
+<br><br><br><br><br>
+<link href="https://getbootstrap.com/docs/4.2/examples/floating-labels/floating-labels.css" rel="stylesheet">
+<form class="form-signin" method="POST" action="/users/register">
+
+<div class="card mb-4">
+  <img class="card-img-top" src="https://www.dropbox.com/s/csgrzywpg7yucu7/logo.png" alt="Card image cap">
+</div>
+
+<% if(typeof errors !== 'undefined'){ %>
+    <div class="card mb-4">
+ <% for(var i=0;i<errors.length;i++) { %>
+   <div class ="alert alert-danger "><%= errors[i].msg %></div>
+ <% } %>
+    </div>
+<% } %>
+
+<div class="form-label-group">
+<input type="text" id="inputName" class="form-control" placeholder="Name" name="name" required autofocus>
+<label for="inputName">Name</label>
+</div>
+
+<div class="form-label-group">
+<input type="number" id="inputRegno" class="form-control" placeholder="Registration No." name="regno" required autofocus>
+<label for="inputEmail">Registration No.</label>
+</div>
+
+<div class="form-label-group">
+<input type="email" id="inputEmail" class="form-control" placeholder="Email address" name="email" required autofocus>
+<label for="inputEmail">Email</label>
+</div>
+
+<div class="form-label-group">
+<input type="password" id="inputPassword" class="form-control" placeholder="Password" name="password" required autofocus>
+<label for="inputPassword">Password</label>
+</div>
+
+<div class="form-label-group">
+<input type="password" id="inputPassword2" class="form-control" placeholder="Confirm Password" name="password2" required autofocus>
+<label for="inputPassword2">Confirm Password</label>
+</div>
+
+<button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+
+</form>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{
+  "name": "stackoverflow",
+  "version": "1.0.0",
+  "description": "A question answer website",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amulyagaur/MNNIT-Stackoverflow.git"
+  },
+  "keywords": [
+    "knowledge-sharing"
+  ],
+  "author": "Amulya Gaur",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/amulyagaur/MNNIT-Stackoverflow/issues"
+  },
+  "homepage": "https://github.com/amulyagaur/MNNIT-Stackoverflow#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "connect-flash": "^0.1.1",
+    "ejs": "^2.6.1",
+    "eslint": "^5.11.1",
+    "express": "^4.16.4",
+    "express-messages": "^1.0.1",
+    "express-session": "^1.15.6",
+    "express-validator": "^5.3.1",
+    "jade": "^1.11.0",
+    "mongoose": "^5.4.1",
+    "npm": "^6.5.0",
+    "passport": "^0.4.0",
+    "passport-facebook": "^2.1.1",
+    "passport-local": "^1.0.0"
+  }
+}

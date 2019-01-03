@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <% if (typeof question != undefined) { %>
+		<title><%= question.title %></title>
+	<% } %>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.bundle.min.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Cuprum' rel='stylesheet'>
+    <!-- Custom styles for this template -->
+    <link href="css/blog-post.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Yanone Kaffeesatz' rel='stylesheet'>
+    <script>
+
+        function show(ansid)
+        {
+            $(`#acommentform${ansid}`).toggle("slow");
+        };
+
+        $(document).ready(function(){
+            $("#qcommentform").hide();
+            $(".acommentform").hide();
+            $(".upvote").click(function(event){
+                event.preventDefault();
+                var postid = $(this).data('postid');
+                var $this = $(this);
+                $.ajax({
+                    method: 'GET',
+                    url: "/questions/qupvote/" + postid, 
+                    datatype: 'json',
+                    success: function (data) {
+                        console.log(data.upvotes);
+                        $('#qup').html("Upvote : " + data.upvotes);
+                    }
+                });
+            });
+            $("#qb").click(function(){
+                $("#qcommentform").toggle("slow");
+            });
+        });
+    </script>
+  </head>
+
+  <body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="#">MNNIT Stackoverflow</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="/questions/ask">Ask Question
+                  <span class="sr-only">(current)</span>
+                </a>
+              </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/">Home
+                <span class="sr-only">(current)</span>
+              </a>
+            </li>
+            <% if(user){ %>
+                <li class="nav-item">
+                  <a class="nav-link" href="/users/<%= user._id %>" >My Profile</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/users/logout">Logout</a>
+                </li>
+                <% }else{ %>
+            <li class="nav-item">
+              <a class="nav-link" href="/users/register">Register</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/users/login">Login</a>
+            </li>
+              <% } %>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <br><br><br>
+    <!-- Page Content -->
+    <div class="container">
+
+      <div class="row">
+
+        <!-- Post Content Column -->
+        <div class="col-lg-8">
+
+          <!-- Title -->
+          <%- messages('message', locals) %>
+          <h1 class="mt-4"><%= question.title %></h1>
+
+
+
+
+          <hr>
+
+          <!-- Post Content -->
+          <p class="lead"><%=  question.qbody %></p>
+          <p class="card-text">
+              <% for(var j=0;j<question.tags.length;j++){ %>
+              <a href="/questions/search/tag/<%= question.tags[j] %>"><span style="background-color: #ADD8E6"><%= question.tags[j] %></span></a>&nbsp;&nbsp;
+              <% } %>
+          </p>
+<!-- Author -->
+          <div class="">
+              <p align = "left" style="font-family: 'Cuprum';"> 
+                <a class="upvote" data-postid="<%= question._id %>" id="qup" href='#' >
+                  
+                      Upvote : <%= question.upvotes %>
+
+                </a>
+              </p>
+              <p align = "right" style="font-family: 'Cuprum';">
+                Asked by
+                <a href="/users/<%= question.askedby %>"><%= question.asker %></a> <br> <font color="grey"><%= question.timestamp %></font>
+              </p>
+          </div><hr>
+          <div class="">
+              <% for(var i=0;i<comments.length;i++){ %>
+                    <% if(comments[i].flag==0){ %>
+              <p align = "left" style="font-family: 'Yanone Kaffeesatz';" style="margin-left: 80px;"><%= comments[i].cbody%> -
+                <a href="/users/<%= comments[i].commenterid %>"><%= comments[i].commenter %></a> <font color="grey"><%= comments[i].timestamp %></font>
+              </p>
+              <hr>
+          <% } %>
+              <% } %>
+          </div>
+
+          <% if(user){ %>
+          <button class="btn btn-default btn-outline-secondary btn-sm" id="qb">add comment</button>
+          <% } %>
+          <div class="card my-4" id="qcommentform">
+            <h5 class="card-header">Leave a Comment:</h5>
+            <div class="card-body">
+              <form method="POST" action="/questions/<%= question._id %>/comment">
+                <div class="form-group">
+                  <textarea class="form-control" rows="2" name="cbody"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+            </div>
+          </div>
+          <hr>
+
+          <% if(answers.length == 0) { %>
+              <div class="card my-4">
+                <h5 class="card-header">Be the first one to answer this question!</h5>
+              </div>
+              <% } else {%>
+                  <div class="card my-4">
+                    <h5 class="card-header"><%=answers.length %>
+                        <% if(answers.length>1){ %>
+                            Answers
+                            <% } else { %>
+                                Answer
+                                <% } %>
+                    </h5>
+                  </div>
+                  <% for(var i=0;i<answers.length;i++){ %>
+                      <div class="card my-4" id="<%= answers[i]._id %>">
+                        <div class="card-body">
+                            <p><%= answers[i].ansbody %></p>
+
+                            <div >
+                                <p align = "right" style="font-family: 'Cuprum';">
+                                  Answered by
+                                  <a href="/users/<%= answers[i].answeredby %>"><%= answers[i].answerer %></a> <br> <font color="grey"><%= answers[i].timestamp %></font>
+                                </p>
+                            </div>
+                            <hr>
+                            <div class="">
+                                <% for(var j=0;j<comments.length;j++){ %>
+                                      <% if(comments[j].flag==1 && comments[j].answerid== answers[i]._id){ %>
+                                <p align = "left" style="font-family: 'Yanone Kaffeesatz';" style="margin-left: 80px;"><%= comments[j].cbody%> -
+                                  <a href="/users/<%= comments[j].commenterid %>"><%= comments[j].commenter %></a> <font color="grey"><%= comments[j].timestamp %></font>
+                                </p>
+                                <hr>
+                            <% } %>
+                                <% } %>
+                            </div>
+                            <% if(user){ %>
+                            <button class="btn btn-default btn-outline-secondary btn-sm" onclick="show('<%= answers[i]._id %>')">add comment</button>
+                            <% } %>
+                            <div class="card my-4 acommentform" id="acommentform<%= answers[i]._id %>" >
+                              <h5 class="card-header">Leave a Comment:</h5>
+                              <div class="card-body">
+                                <form method="POST" action="/questions/<%= question._id %>/answer/<%= answers[i]._id %>/comment">
+                                  <div class="form-group">
+                                    <textarea class="form-control" rows="2" name="cbody"></textarea>
+                                  </div>
+                                  <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                              </div>
+                            </div>
+
+                        </div>
+                      </div>
+                      <% } %>
+                  <% } %>
+
+          <!-- Answer Form -->
+          <% if(user){ %>
+          <div class="card my-4">
+            <h5 class="card-header">Your Answer</h5>
+            <div class="card-body">
+              <form method="POST" action="/questions/<%= question._id %>/answer">
+                <div class="form-group">
+                  <textarea class="form-control" rows="3" required name="ansbody"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+            </div>
+          </div>
+        <% } else{ %>
+            <div class="card my-4">
+              <h5 class="card-header">Login to Answer.</h5>
+            </div>
+        <% } %>
+
+        </div>
+
+        <!-- Sidebar Widgets Column -->
+        <div class="col-md-4">
+
+          <!-- Search Widget -->
+          <div class="card my-4">
+              <h5 class="card-header">Search</h5>
+              <div class="card-body">
+                <form action="/questions/searchbox/tag" method="POST">
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Search tag" name="searchtag">
+                  <span class="input-group-btn">
+                    <button class="btn btn-secondary" type="submit" >Go!</button>
+                  </span>
+                </div>
+              </form>
+              </div>
+            </div>
+
+          <!-- Categories Widget -->
+          <div class="card my-4">
+            <h5 class="card-header">Categories</h5>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-lg-6">
+                  <ul class="list-unstyled mb-0">
+                    <li>
+                      <a href="#">Web Design</a>
+                    </li>
+                    <li>
+                      <a href="#">HTML</a>
+                    </li>
+                    <li>
+                      <a href="#">Freebies</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-lg-6">
+                  <ul class="list-unstyled mb-0">
+                    <li>
+                      <a href="#">JavaScript</a>
+                    </li>
+                    <li>
+                      <a href="#">CSS</a>
+                    </li>
+                    <li>
+                      <a href="#">Tutorials</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Side Widget -->
+          <div class="card my-4">
+            <h5 class="card-header">Side Widget</h5>
+            <div class="card-body">
+              You can put anything you want inside of these side widgets. They are easy to use, and feature the new Bootstrap 4 card containers!
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+      <!-- /.row -->
+
+    </div>
+    <!-- /.container -->
+
+    <!-- Footer -->
+    <footer class="py-5 bg-dark">
+      <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; Your Website 2018</p>
+      </div>
+      <!-- /.container -->
+    </footer>
+
+  </body>
+
+</html>

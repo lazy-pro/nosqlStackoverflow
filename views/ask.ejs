@@ -1,0 +1,43 @@
+<%- include('header'); -%>
+<br><br><br><br><br>
+<link href="https://getbootstrap.com/docs/4.2/examples/floating-labels/floating-labels.css" rel="stylesheet">
+<form class="form-signin" method="POST" action="/questions/ask">
+
+<div class="card mb-4">
+  <img class="card-img-top" src="https://www.dropbox.com/s/csgrzywpg7yucu7/logo.png" alt="Card image cap"><br>
+</div>
+
+<% if(typeof errors !== 'undefined'){ %>
+    <div class="card mb-4">
+ <% for(var i=0;i<errors.length;i++) { %>
+   <div class ="alert alert-danger "><%= errors[i].msg %></div>
+ <% } %>
+    </div>
+<% } %>
+
+
+<div class="card mb-4">
+    <font size=8 ><center>Ask a question</center></font>
+<%- messages('message', locals) %>
+</div>
+
+<div class="form-label-group">
+<input type="text" id="inputTitle" class="form-control" placeholder="Title" name="title" required autofocus>
+<label for="inputTitle">Title</label>
+</div>
+
+<div class="form-label-group">
+<textarea name="qbody" class="form-control" rows="8" cols="80" id="inputBody" placeholder="Body" required>
+</textarea>
+</div>
+
+<div class="form-label-group">
+<input type="text" id="inputTags" class="form-control" placeholder="Tags" name="tags" required>
+<label for="inputTags">Relevant Tags(space seperated)</label>
+</div>
+
+<button class="btn btn-lg btn-primary btn-block" type="submit">Ask</button>
+
+</form>
+</body>
+</html>
