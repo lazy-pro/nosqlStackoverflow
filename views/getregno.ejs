@@ -1,0 +1,33 @@
+<%- include('header'); -%>
+<br><br><br><br><br>
+<link href="https://getbootstrap.com/docs/4.2/examples/floating-labels/floating-labels.css" rel="stylesheet">
+<form class="form-signin" method="POST" action="/users/regno">
+
+<div class="card mb-4">
+  <img class="card-img-top" src="/images/logo.png" alt="Card image cap"><br>
+</div>
+
+
+<div class="card mb-4">
+<%- messages('message', locals) %>
+</div>
+<% if(typeof errors !== 'undefined'){ %>
+    <div class="card mb-4">
+ <% for(var i=0;i<errors.length;i++) { %>
+   <div class ="alert alert-danger "><%= errors[i].msg %></div>
+ <% } %>
+    </div>
+<% } %>
+
+<div class="form-label-group">
+<input type="number" id="inputRegno" class="form-control" placeholder="Registration Number" name="reg" required autofocus>
+<label for="inputRegno">Enter Registration Number</label>
+</div>
+
+
+
+<button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+
+</form>
+</body>
+</html>

@@ -27,7 +27,6 @@ router.get('/qupvote/:qid', function(req, res){
                 console.log(err);
             }
             else{
-                //req.flash('success', "upvoted");
                 Question.find({ _id: req.params.qid }, function (err, ques) {
                     if (err) {
                         console.log(err);
@@ -67,14 +66,46 @@ router.post('/searchbox/tag', function (req, res) {
 
 
 router.get('/search/tag/:tg', function (req, res) {
-    Question.find({ tags: req.params.tg }, function (err, questions) {
+    Question.find({ tags: req.params.tg }, function (err, filteredquestions) {
         if (err) {
             console.log(err);
         }
         else {
-            res.render('index', {
-                title: 'Search - ' + req.params.tg,
-                questions: questions,
+            Question.find({}, function (err, questions) {
+                if (err)
+                    console.log(err);
+                else {
+                    var frequency = {}, value;
+                    for (var i = 0; i < questions.length; i++) {
+                        for (var j = 0; j < questions[i].tags.length; j++) {
+                            console.log(questions[i].tags[j]);
+                            value = questions[i].tags[j];
+                            if (value in frequency) {
+                                frequency[value]++;
+                            }
+                            else {
+                                frequency[value] = 1;
+                            }
+                        }
+                    }
+                    var uniques = [];
+                    for (value in frequency) {
+                        uniques.push(value);
+                    }
+        
+                    function compareFrequency(a, b) {
+                        return frequency[b] - frequency[a];
+                    }
+        
+                    var result = uniques.sort(compareFrequency);
+                    console.log(result);
+        
+                    res.render('index', {
+                        title: 'Search - ' + req.params.tg,
+                        questions: filteredquestions,
+                        trendingtags:result
+                    });
+                }
             });
         }
     });
@@ -243,11 +274,44 @@ router.get('/:id', function (req, res) {
                             return;
                         }
                         else {
-                            res.render('question', {
-                                question: question,
-                                answers: answers,
-                                comments: comments
+                            Question.find({}, function (err, questions) {
+                                if (err)
+                                    console.log(err);
+                                else {
+                                    var frequency = {}, value;
+                                    for (var i = 0; i < questions.length; i++) {
+                                        for (var j = 0; j < questions[i].tags.length; j++) {
+                                            console.log(questions[i].tags[j]);
+                                            value = questions[i].tags[j];
+                                            if (value in frequency) {
+                                                frequency[value]++;
+                                            }
+                                            else {
+                                                frequency[value] = 1;
+                                            }
+                                        }
+                                    }
+                                    var uniques = [];
+                                    for (value in frequency) {
+                                        uniques.push(value);
+                                    }
+                        
+                                    function compareFrequency(a, b) {
+                                        return frequency[b] - frequency[a];
+                                    }
+                        
+                                    var result = uniques.sort(compareFrequency);
+                                    console.log(result);
+                        
+                                    res.render('question', {
+                                        question: question,
+                                        answers: answers,
+                                        comments: comments,
+                                        trendingtags:result
+                                    });
+                                }
                             });
+                            
                         }
                     });
 

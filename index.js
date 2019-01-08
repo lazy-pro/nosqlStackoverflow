@@ -3,7 +3,6 @@ const app = express();
 const port = 3010
 const passport = require('passport');
 var path = require('path')
-var path = require('path');
 var fs = require('fs');
 var router = express.Router();
 const config = require('./config/database');
@@ -58,6 +57,9 @@ app.use(expressValidator({
 require('./config/passport')(passport);
 app.use(passport.initialize());
 app.use(passport.session());
+var auth = require('./config/auth');
+auth(passport);
+
 
 var mongoose = require('mongoose');
 mongoose.connect(config.database, {
@@ -83,27 +85,75 @@ app.get('*', function (req, res, next) {
 
 app.get('/', function (req, res) {
 
-    Question.find({}, function (err, question) {
+    if(req.user)
+    {
+        if(req.user.regno == 12345678)
+        {
+            res.render('getregno',{
+                title:'Input Registration number'
+            });
+        }
+    }
+    else
+    console.log("no one");
+
+    Question.find({}, function (err, question) 
+    {
         if (err)
             console.log(err);
         else {
-            
-            res.render('index', {
-                title: 'Home',
-                questions: question,
+            Question.find({}, function (err, questions) {
+                if (err)
+                    console.log(err);
+                else {
+                    var frequency = {}, value;
+                    for (var i = 0; i < questions.length; i++) {
+                        for (var j = 0; j < questions[i].tags.length; j++) {
+                            value = questions[i].tags[j];
+                            if (value in frequency) {
+                                frequency[value]++;
+                            }
+                            else {
+                                frequency[value] = 1;
+                            }
+                        }
+                    }
+                    var uniques = [];
+                    for (value in frequency) {
+                        uniques.push(value);
+                    }
+
+                    function compareFrequency(a, b) {
+                        return frequency[b] - frequency[a];
+                    }
+
+                    var result = uniques.sort(compareFrequency);
+                    
+                    res.render('index', {
+                        title: 'Home',
+                        questions: question,
+                        trendingtags: result
+                    });
+                }
             });
         }
-    });
 
+    });
 });
 
-app.get('/auth/facebook', passport.authenticate('facebook'));
-
-app.get('/auth/facebook/callback',
-    passport.authenticate('facebook', {
-        successRedirect: '/',
-        failureRedirect: '/login'
+app.get('/auth/google',
+    passport.authenticate('google', {
+        scope: ['https://www.googleapis.com/auth/userinfo.profile',
+            'https://www.googleapis.com/auth/userinfo.email']
     }));
+
+app.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    function (req, res) {
+        req.flash('success', 'Logged in via google');
+        res.redirect('/');
+    });
+
 
 let users = require('./routes/users');
 app.use('/users', users);

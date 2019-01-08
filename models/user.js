@@ -1,4 +1,5 @@
 let mongoose = require('mongoose');
+var findOrCreate = require('mongoose-findorcreate')
 
 let userSchema = mongoose.Schema({
     name: {
@@ -11,12 +12,15 @@ let userSchema = mongoose.Schema({
     },
     regno: {
         type: Number,
-        required: true
+        required: true,
+        default: 12345678
     },
     password: {
         type: String,
         required: true
     }
 });
+
+userSchema.plugin(findOrCreate);
 
 let User = module.exports = mongoose.model('User', userSchema);
